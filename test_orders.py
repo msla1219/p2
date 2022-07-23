@@ -39,3 +39,7 @@ for i in range(num_orders):
     process_order(order_dict)
 bar.finish()
 
+# list up all the orders (by msl)
+results = session.execute("select * from orders")
+for rec in results:
+    print(rec)
