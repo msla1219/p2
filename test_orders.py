@@ -40,7 +40,7 @@ def process_order(order):
                             " and buy_currency = '" + order['sell_currency'] + "'")
   
   if results.first()[0] == 0:
-    print("::::no matching order::::")
+    print("****** no matching order ******")
     return
   
   results = session.execute("select distinct id, sender_pk, receiver_pk, buy_currency, sell_currency, buy_amount, sell_amount " + 
