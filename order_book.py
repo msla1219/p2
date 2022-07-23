@@ -64,7 +64,7 @@ def process_order(order):
     '''
     break
 
-  print(" matching order: ", order_id, order['buy_currency'], order['sell_currency'], order['buy_amount'], order['sell_amount'])
+  print(" matching order: ", m_order_id, m_buy_currency, m_sell_currency, m_buy_amount, m_sell_amount)
 
   # update both the matching orders 
   stmt = text("UPDATE orders SET counterparty_id=:id, filled=:curr_date WHERE id=:the_id")
@@ -98,4 +98,3 @@ def process_order(order):
     session.add(order_obj)
     session.commit()
 
-    
