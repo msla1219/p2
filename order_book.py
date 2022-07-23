@@ -90,7 +90,7 @@ def process_order(order):
                         buy_currency=order['buy_currency'], 
                         sell_currency=order['sell_currency'], 
                         buy_amount=order['buy_amount'] - m_sell_amount, 
-                        sell_amount=order['sell_amount'] - (order['sell_amount']/order['buy_amount']) * m_sell_amount,
+                        sell_amount=order['sell_amount'] - ((order['sell_amount']/order['buy_amount']) * m_sell_amount),
                         creator_id=order_id)
     session.add(order_obj)
     session.commit()
