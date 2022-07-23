@@ -35,9 +35,9 @@ def process_order(order):
   #2. Matching order
   results = session.execute("select count(id) " + 
                             "from orders where filled is null " + 
-                            " and (buy_amount/sell_amount) <= " + str(order['sell_amount']/order['buy_amount']) + 
                             " and sell_currency = '" + order['buy_currency'] + "'" +
-                            " and buy_currency = '" + order['sell_currency'] + "'")
+                            " and buy_currency = '" + order['sell_currency'] + "'" +
+                            " and (buy_amount/sell_amount) <= " + str(order['sell_amount']/order['buy_amount'])) 
   
   if results.first()[0] == 0:
     print("::::no matching order::::")
@@ -45,9 +45,9 @@ def process_order(order):
   
   results = session.execute("select distinct id, sender_pk, receiver_pk, buy_currency, sell_currency, buy_amount, sell_amount " + 
                             "from orders where filled is null " + 
-                            " and (buy_amount/sell_amount) <= " + str(order['sell_amount']/order['buy_amount']) + 
                             " and sell_currency = '" + order['buy_currency'] + "'" +
-                            " and buy_currency = '" + order['sell_currency'] + "'")
+                            " and buy_currency = '" + order['sell_currency'] + "'" +
+                            " and (buy_amount/sell_amount) <= " + str(order['sell_amount']/order['buy_amount'])) 
 
   for row in results:
     m_order_id = row['id']
@@ -65,6 +65,7 @@ def process_order(order):
     break
 
   print(" matching order: ", m_order_id, m_buy_currency, m_sell_currency, m_buy_amount, m_sell_amount)
+  print(" order['sell_amount']/order['buy_amount']: ", order['sell_amount']/order['buy_amount'], ">=", "(buy_amount/sell_amount)", (m_buy_amount/m_sell_amount))
 
   # update both the matching orders 
   stmt = text("UPDATE orders SET counterparty_id=:id, filled=:curr_date WHERE id=:the_id")
