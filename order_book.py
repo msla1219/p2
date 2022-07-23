@@ -20,7 +20,10 @@ def process_order(order):
                       buy_currency=order['buy_currency'], 
                       sell_currency=order['sell_currency'], 
                       buy_amount=order['buy_amount'], 
-                      sell_amount=order['sell_amount'] )
+                      sell_amount=order['sell_amount'], 
+                      exchange_rate=(order['buy_amount']/order['sell_amount'])
+                      )
+
   session.add(order_obj)
   session.commit()
 
@@ -34,20 +37,20 @@ def process_order(order):
 
   #2. Matching order
   results = session.execute("select count(id) " + 
-                            "from orders where filled is null " + 
-                            " and sell_currency = '" + order['buy_currency'] + "'" +
-                            " and buy_currency = '" + order['sell_currency'] + "'" +
-                            " and (buy_amount/sell_amount) <= " + str(order['sell_amount']/order['buy_amount'])) 
-  
+                            " from orders where orders.filled is null " + 
+                            " and orders.sell_currency = '" + order['buy_currency'] + "'" +
+                            " and orders.buy_currency = '" + order['sell_currency'] + "'" +
+                            " and exchange_rate <= " + str(order['sell_amount']/order['buy_amount']))
+
   if results.first()[0] == 0:
     print("::::no matching order::::")
     return
-  
+
   results = session.execute("select distinct id, sender_pk, receiver_pk, buy_currency, sell_currency, buy_amount, sell_amount " + 
-                            "from orders where filled is null " + 
-                            " and sell_currency = '" + order['buy_currency'] + "'" +
-                            " and buy_currency = '" + order['sell_currency'] + "'" +
-                            " and (buy_amount/sell_amount) <= " + str(order['sell_amount']/order['buy_amount'])) 
+                            "from orders where orders.filled is null " + 
+                            " and orders.sell_currency = '" + order['buy_currency'] + "'" +
+                            " and orders.buy_currency = '" + order['sell_currency'] + "'" +
+                            " and exchange_rate <= " + str(order['sell_amount']/order['buy_amount'])) 
 
   for row in results:
     m_order_id = row['id']
@@ -58,10 +61,6 @@ def process_order(order):
     m_buy_amount = row['buy_amount']
     m_sell_amount = row['sell_amount']
     print(" matched at ID: ", m_order_id)
-    '''
-    if order['buy_amount'] < 0 or order['sell_amount'] < 0:
-        print("::: negative amount :::")
-    '''
     break
 
   print(" matching order: ", m_order_id, m_buy_currency, m_sell_currency, m_buy_amount, m_sell_amount)
@@ -84,6 +83,7 @@ def process_order(order):
                         sell_currency=order['sell_currency'], 
                         buy_amount=order['buy_amount'] - m_sell_amount, 
                         sell_amount=order['sell_amount'] - ((order['sell_amount']/order['buy_amount']) * m_sell_amount),
+                        exchange_rate = (order['buy_amount'] - m_sell_amount)/(order['sell_amount'] - ((order['sell_amount']/order['buy_amount']) * m_sell_amount)),
                         creator_id=order_id)
     session.add(order_obj)
     session.commit()
@@ -95,7 +95,7 @@ def process_order(order):
                         sell_currency=m_sell_currency, 
                         buy_amount= m_buy_amount - (m_buy_amount/m_sell_amount) * order['buy_amount'], 
                         sell_amount= m_sell_amount - order['buy_amount'],
+                        exchange_rate = (m_buy_amount - (m_buy_amount/m_sell_amount) * order['buy_amount'])/(m_sell_amount - order['buy_amount']),
                         creator_id=m_order_id)
     session.add(order_obj)
     session.commit()
-

@@ -23,13 +23,19 @@ order['buy_currency'] = other_platform
 order['sell_currency'] = platform
 order['buy_amount'] = random.randint(1,10)
 order['sell_amount'] = random.randint(1,10)
-
+order['exchange_rate'] = order['buy_amount']/order['sell_amount']
 
 #Insert the order
-order_obj = Order( sender_pk=order['sender_pk'],receiver_pk=order['receiver_pk'], buy_currency=order['buy_currency'], sell_currency=order['sell_currency'], buy_amount=order['buy_amount'], sell_amount=order['sell_amount'] )
+order_obj = Order(sender_pk=order['sender_pk'],
+                  receiver_pk=order['receiver_pk'], 
+                  buy_currency=order['buy_currency'], 
+                  sell_currency=order['sell_currency'], 
+                  buy_amount=order['buy_amount'], 
+                  sell_amount=order['sell_amount'], 
+                  exchange_rate=order['exchange_rate'])
 
 #Alternatively, this code inserts the same record and is arguably more readable
-fields = ['sender_pk','receiver_pk','buy_currency','sell_currency','buy_amount','sell_amount']
+fields = ['sender_pk','receiver_pk','buy_currency','sell_currency','buy_amount','sell_amount', 'exchange_rate']
 order_obj = Order(**{f:order[f] for f in fields})
 
 session.add(order_obj)
