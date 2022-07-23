@@ -12,18 +12,7 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-# Helper
-def print_it(title, results):
-    """Just a helper function to display database results"""
-    print("\n" + title)
-
-    for rec in results:
-        print(rec)
-        break       # just for one.
-
-
 def process_order(order):
-  #Your code here
 
   #1. Insert new order
   order_obj = Order(  sender_pk=order['sender_pk'],
@@ -41,6 +30,7 @@ def process_order(order):
                             " and receiver_pk = '" + str(order['receiver_pk']) + "'")
 
   order_id = results.first()['id']
+  print(" new order: ", order_id, order['buy_currency'], order['sell_currency'], order['buy_amount'], order['sell_amount'])
 
   #2. Matching order
   results = session.execute("select count(id) " + 
@@ -68,11 +58,13 @@ def process_order(order):
     m_buy_amount = row['buy_amount']
     m_sell_amount = row['sell_amount']
     print(" matched at ID: ", m_order_id)
-
+    '''
     if order['buy_amount'] < 0 or order['sell_amount'] < 0:
         print("::: negative amount :::")
-
+    '''
     break
+
+  print(" matching order: ", order_id, order['buy_currency'], order['sell_currency'], order['buy_amount'], order['sell_amount'])
 
   # update both the matching orders 
   stmt = text("UPDATE orders SET counterparty_id=:id, filled=:curr_date WHERE id=:the_id")
@@ -105,3 +97,5 @@ def process_order(order):
                         creator_id=m_order_id)
     session.add(order_obj)
     session.commit()
+
+    
