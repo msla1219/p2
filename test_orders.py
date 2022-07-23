@@ -30,6 +30,7 @@ def process_order(order):
                             " and receiver_pk = '" + str(order['receiver_pk']) + "'")
 
   order_id = results.first()['id']
+  print("new order: ", order_id, order['buy_currency'], order['sell_currency'], order['buy_amount'], order['sell_amount'])
 
   #2. Matching order
   results = session.execute("select count(id) " + 
@@ -62,6 +63,8 @@ def process_order(order):
         print("::: negative amount :::")
     '''
     break
+
+  print("matching order: ", order_id, order['buy_currency'], order['sell_currency'], order['buy_amount'], order['sell_amount'])
 
   # update both the matching orders 
   stmt = text("UPDATE orders SET counterparty_id=:id, filled=:curr_date WHERE id=:the_id")
