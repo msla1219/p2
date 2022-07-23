@@ -13,7 +13,6 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 def process_order(order):
-  #Your code here
 
   #1. Insert new order
   order_obj = Order(  sender_pk=order['sender_pk'],
@@ -58,10 +57,10 @@ def process_order(order):
     m_buy_amount = row['buy_amount']
     m_sell_amount = row['sell_amount']
     print(" matched at ID: ", m_order_id)
-
+    '''
     if order['buy_amount'] < 0 or order['sell_amount'] < 0:
         print("::: negative amount :::")
-
+    '''
     break
 
   # update both the matching orders 
